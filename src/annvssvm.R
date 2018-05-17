@@ -105,6 +105,40 @@ f.measure <- function(true.pos, true.neg, false.pos, false.neg) {
   return(res)
 }
 
+results <- function(test.set, predicted.by){
+  #matriz de confusión para los resultados de ANN
+  mat <- confusion.matrix(test.set$class, predicted.by)
+  
+  print("Matriz de confusion")
+  print(mat)
+  
+  levs <- colnames(mat) #lista de labels/target o "niveles" de clasificación
+  # print("levs")
+  # print(levs)
+  #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
+  #de la clasificación en cada clase
+  #imprimimos al final los resultados
+  for (k in 1:length(levs)){
+    
+    tp <- true.positives(mat, k)
+    tn <- true.negatives(mat, k)
+    fp <- false.positives(mat, k)
+    fn <- false.negatives(mat, k)
+    
+    acc <- accuracy(tp, tn, fp, fn)
+    prec <- precision(tp,fp)
+    rec <- recall(tp, fn)
+    f <- f.measure(tp, tn, fp, fn)
+    
+    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp," tn:",tn," fp:",fp,"  fn:", fn,
+        "\nAccuracy: ", acc,
+        "\nPrecision:", prec,
+        "\nRecall    ", rec,
+        "\nF-measure:", f)
+  }
+  
+}
+
 run.annvssvm <- function()
 {
   ## Read dataset
@@ -130,37 +164,8 @@ run.annvssvm <- function()
   predicted.by.ann <- predict(ann, test.set, "class")
   predicted.by.svm <- predict(svm, test.set)
   ########
-  
-  #matriz de confusión para los resultados de ANN
-  mat_ann <- confusion.matrix(test.set$class, predicted.by.ann)
-  
-  print("Matriz de confusion")
-  print(mat_ann)
-  
-  levs <- colnames(mat_ann) #lista de labels/target o "niveles" de clasificación
-  # print("levs")
-  # print(levs)
-  #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
-  #de la clasificación en cada clase
-  #imprimimos al final los resultados
-  for (k in 1:length(levs)){
-    
-    tp_ann <- true.positives(mat_ann, k)
-    tn_ann <- true.negatives(mat_ann, k)
-    fp_ann <- false.positives(mat_ann, k)
-    fn_ann <- false.negatives(mat_ann, k)
-    
-    acc_ann <- accuracy(tp_ann, tn_ann, fp_ann, fn_ann)
-    prec_ann <- precision(tp_ann,fp_ann)
-    rec_ann <- recall(tp_ann, fn_ann)
-    f_ann <- f.measure(tp_ann, tn_ann, fp_ann, fn_ann)
-    
-    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
-        "\nAccuracy: ", acc_ann,
-        "\nPrecision:", prec_ann,
-        "\nRecall    ", rec_ann,
-        "\nF-measure:", f_ann)
-  }
+  results(test.set,predicted.by.ann)
+  results(test.set,predicted.by.svm)
   
   # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
   # PROCEDA A MOSTRAR LAS MÉTRICAS
