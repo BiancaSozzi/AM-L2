@@ -17,9 +17,8 @@ true.positives <- function(cm, k) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- cm[k,k]
+  print(res)
   ########
 
   res
@@ -145,10 +144,12 @@ run.annvssvm <- function()
   #matriz de confusión para los resultados de ANN
   mat_ann <- confusion.matrix(test.set$class, predicted.by.ann)
   
+  print("Matriz de confusion")
   print(mat_ann)
   
   levs <- colnames(mat_ann) #lista de labels/target o "niveles" de clasificación
-  
+  # print("levs")
+  # print(levs)
   #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
   #de la clasificación en cada clase
   #imprimimos al final los resultados
@@ -164,11 +165,11 @@ run.annvssvm <- function()
     rec_ann <- recall(tp_ann, fn_ann)
     f_ann <- f.measure(tp_ann, tn_ann, fp_ann, fn_ann)
     
-    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
-        "\nAccuracy: ", acc_ann,
-        "\nPrecision:", prec_ann,
-        "\nRecall    ", rec_ann,
-        "\nF-measure:", f_ann)
+    # cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
+    #     "\nAccuracy: ", acc_ann,
+    #     "\nPrecision:", prec_ann,
+    #     "\nRecall    ", rec_ann,
+    #     "\nF-measure:", f_ann)
   }
   
   # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
@@ -180,6 +181,6 @@ run.annvssvm <- function()
   #
   ########
   
-  mat_ann
+  # mat_ann
 }
 
