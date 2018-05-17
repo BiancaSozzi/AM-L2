@@ -66,9 +66,7 @@ accuracy <- function(true.pos, true.neg, false.pos, false.neg) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- (true.pos+true.neg)/(true.pos+true.neg+false.pos+false.neg)
   ########
 
   return(res)
@@ -78,9 +76,7 @@ precision <- function(true.pos, false.pos) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- true.pos / (true.pos+false.pos)
   ########
 
   return(res)
@@ -90,9 +86,7 @@ recall <- function(true.pos, false.neg) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- true.pos / (true.pos+false.neg)
   ########
 
   return(res)
@@ -102,9 +96,10 @@ f.measure <- function(true.pos, true.neg, false.pos, false.neg) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  prec <- precision(true.pos,false.pos)
+  rec <- recall(true.pos, false.neg)
+  
+  res <- 2*(prec*rec)/(prec+rec)
   ########
 
   return(res)
@@ -160,11 +155,11 @@ run.annvssvm <- function()
     rec_ann <- recall(tp_ann, fn_ann)
     f_ann <- f.measure(tp_ann, tn_ann, fp_ann, fn_ann)
     
-    # cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
-    #     "\nAccuracy: ", acc_ann,
-    #     "\nPrecision:", prec_ann,
-    #     "\nRecall    ", rec_ann,
-    #     "\nF-measure:", f_ann)
+    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
+        "\nAccuracy: ", acc_ann,
+        "\nPrecision:", prec_ann,
+        "\nRecall    ", rec_ann,
+        "\nF-measure:", f_ann)
   }
   
   # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
