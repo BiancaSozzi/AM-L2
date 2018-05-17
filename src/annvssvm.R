@@ -30,9 +30,8 @@ true.negatives <- function(cm, k) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  cm <- cm[-k,-k]
+  res <- sum(cm)
   ########
 
   res
