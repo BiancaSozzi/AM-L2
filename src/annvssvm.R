@@ -55,9 +55,7 @@ false.negatives <- function(cm, k) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- sum(cm[k,-k])
   ########
 
   res
