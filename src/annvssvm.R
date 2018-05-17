@@ -164,7 +164,9 @@ run.annvssvm <- function()
   predicted.by.ann <- predict(ann, test.set, "class")
   predicted.by.svm <- predict(svm, test.set)
   ########
+  print("Calculo para ANN")
   results(test.set,predicted.by.ann)
+  print("Calculo para SVM")
   results(test.set,predicted.by.svm)
   
   # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
