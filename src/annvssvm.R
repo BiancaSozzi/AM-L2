@@ -125,6 +125,7 @@ run.annvssvm <- function()
   splits <- split.data(data, 0.3)
   train.set <- splits$train
   test.set <- splits$test
+  # print(test.set)
   
   ann <- NULL # clasificador aprendido por la red neuronal usando la función nnet
   svm <- NULL # clasificado aprendido por SVM usando la función svm
@@ -133,9 +134,8 @@ run.annvssvm <- function()
   predicted.by.svm <- c() #resultados de la predicción usando el modelo SVM (método predict)
   
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  # print(dim(train.set))
+  ann <- nnet(formula=class~., data=train.set, size=3, MaxNWts= 3000)
   ########
   
   #matriz de confusión para los resultados de ANN
