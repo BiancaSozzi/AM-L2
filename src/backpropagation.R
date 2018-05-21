@@ -82,8 +82,11 @@ has.satisfied.condition <- function(errors, eps, max.iter) {
 # The sum-of-squares error function. 
 # The backpropagation algorithm tries to minimize it
 
-error.function <- function(y, t) { sum((y - t)^2) / 2 }
-
+# The backpropagation algorithm tries to minimize it
+error.function <- function(y, t) { 
+  # sum((y - t)^2) / 2 # <- regression error
+  -sum(log(y)*t) # <- cross-entropy for multiclass
+}
 
 # Backpropagation algorithm
 #

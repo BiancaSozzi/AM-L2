@@ -45,9 +45,9 @@ svm.kfold <- function(gammas,costs,data,k)
 
   summary <- data.frame()
 
-  all.indexes <- sample(nrow(data), nrow(data), replace=FALSE)
+  all.indexes <- sample(nrow(data), nrow(data), replace=FALSE) ##toma elementos al azar
 
-  validate.set.size <- trunc( nrow(data)/(k) )
+  validate.set.size <- trunc(nrow(data)/(k))
 
   iterations <- 1:k
 
@@ -65,9 +65,15 @@ svm.kfold <- function(gammas,costs,data,k)
       for(i in iterations) {
 
         #######
-        #
-        # ADD YOUR CODE HERE
-        #
+        hasta <- i * validate.set.size
+        desde <- hasta - validate.set.size
+        test.subset <- data[desde:hasta,]
+        train.subset <- data[-(desde:hasta),]
+        svm <- svm(formula=class~., data= train.subset)
+        predicted.by.svm <- predict(svm, test.subset)
+        source("annvssvm.R")
+        acc <- results(test.subset, predicted.by.svm)
+        sum.accuracy <- sum.accuracy + acc
         ########
       }
       
@@ -106,6 +112,7 @@ run.kfold.experiment <- function()
   splits <- split.data(data, 0.3)
   train.set <- splits$train
   test.set <- splits$test
+  
   ## Entrenar un modelo SVM usando kfold cross-validation
   svm.model <- svm.kfold(gammas,costs,train.set,k)
 

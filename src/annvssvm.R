@@ -153,6 +153,8 @@ results <- function(test.set, predicted.by){
         "\nRecall    ", rec,
         "\nF-measure:", f)
   }
+  
+  return(acc)
 }
 
 
@@ -184,17 +186,17 @@ run.annvssvm <- function()
   
   print("\n Calculo para ann")
   results(test.set, predicted.by.ann)
-  print("Calculo para svm")
-  results(test.set, predicted.by.svm)
+  
   
   
   # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
   # PROCEDA A MOSTRAR LAS MÉTRICAS
   # PUEDE BASARSE EN EL CÓDIGO ANTERIOR PARA ANN
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  
+  print("Calculo para svm")
+  results(test.set, predicted.by.svm)
+  
   ########
   
   # mat_ann
