@@ -1,5 +1,5 @@
 source("utils.R")
-
+source('annvssvm.R')
 deps <- c("utils.R")
 
 dependencies.loader(deps)
@@ -65,9 +65,16 @@ svm.kfold <- function(gammas,costs,data,k)
       for(i in iterations) {
 
         #######
-        #
-        # ADD YOUR CODE HERE
-        #
+        
+        hasta <- i * validate.set.size
+        desde <- hasta - validate.set.size + 1
+        test.subset <- data[desde:hasta,]
+        train.subset <- data[-(desde:hasta),]
+        svm <- svm(formula=class~., data=train.subset)
+        predicted.by.svm <- predict(svm, test.subset)
+        acc <- results(test.subset, predicted.by.svm)
+        sum.accuracy <- sum.accuracy + acc
+        
         ########
       }
       
@@ -91,6 +98,41 @@ svm.kfold <- function(gammas,costs,data,k)
   ret
 }
 
+results <- function(test.set, predicted.by){
+  #matriz de confusión para los resultados de ANN
+  mat <- confusion.matrix(test.set$class, predicted.by)
+  
+  print("Matriz de confusion")
+  print(mat)
+  
+  levs <- colnames(mat) #lista de labels/target o "niveles" de clasificación
+  # print("levs")
+  # print(levs)
+  #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
+  #de la clasificación en cada clase
+  #imprimimos al final los resultados
+  for (k in 1:length(levs)){
+    
+    tp <- true.positives(mat, k)
+    tn <- true.negatives(mat, k)
+    fp <- false.positives(mat, k)
+    fn <- false.negatives(mat, k)
+    
+    acc <- accuracy(tp, tn, fp, fn)
+    prec <- precision(tp,fp)
+    rec <- recall(tp, fn)
+    f <- f.measure(tp, tn, fp, fn)
+    
+    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp," tn:",tn," fp:",fp,"  fn:", fn,
+        "\nAccuracy: ", acc,
+        "\nPrecision:", prec,
+        "\nRecall    ", rec,
+        "\nF-measure:", f)
+    
+    return(acc)
+  }
+  
+}
 
 run.kfold.experiment <- function()
 {
