@@ -23,17 +23,17 @@ split.data <- function(data, perc=1) {
 
 # METODO svm.kfold
 # En k-fold cross-validation, los datos son particionados aleatoriamente en k subconjuntos
-# De los k subconjuntos, uno sólo de ellos es usado para validación y testeo del modelo,
+# De los k subconjuntos, uno sÃ³lo de ellos es usado para validaciÃ³n y testeo del modelo,
 # dejando los k-1 subconjuntos restantes para entrenamiento. El proceso de cross-validation
-# es repetido k veces (los k-folds), con cada uno de los k subconjuntos usando tan sólo uno
-# para validación.
-# Luego, los k resultados pueden ser promediados para mostrar una simple estimación.
-# Al repetirse este método aleatoriamente sobre subconjuntos, todas las observaciones son usadas
-# tanto para entrenamiento como validación, y cada subconjunto es usado para validación
+# es repetido k veces (los k-folds), con cada uno de los k subconjuntos usando tan sÃ³lo uno
+# para validaciÃ³n.
+# Luego, los k resultados pueden ser promediados para mostrar una simple estimaciÃ³n.
+# Al repetirse este mÃ©todo aleatoriamente sobre subconjuntos, todas las observaciones son usadas
+# tanto para entrenamiento como validaciÃ³n, y cada subconjunto es usado para validaciÃ³n
 # exactamente una vez.
 # PARAMETROS
 # data: datos de entrenamiento usados para aprender el modelo svm.model
-# k: el número de subconjuntos en el que debe particionarse los datos
+# k: el nÃºmero de subconjuntos en el que debe particionarse los datos
 # gammas: array con valores gamma
 # costs: array con valores de costos
 
@@ -46,6 +46,9 @@ svm.kfold <- function(gammas,costs,data,k)
   summary <- data.frame()
 
   all.indexes <- sample(nrow(data), nrow(data), replace=FALSE)
+  
+  # print("hola")
+  # print(all.indexes)
 
   validate.set.size <- trunc( nrow(data)/(k) )
 
@@ -65,9 +68,17 @@ svm.kfold <- function(gammas,costs,data,k)
       for(i in iterations) {
 
         #######
-        #
-        # ADD YOUR CODE HERE
-        #
+        
+        hasta <- i * validate.set.size
+        desde <- hasta - validate.set.size
+        test.subset <- data[desde:hasta,]
+        train.subset <- data[-(desde:hasta),]
+        svm <- svm(formula=class~., data= train.subset)
+        predicted.by.svm <- predict(svm, test.subset)
+        source("annvssvm.R")
+        acc <- results(test.subset, predicted.by.svm)
+        sum.accuracy <- sum.accuracy + acc
+        
         ########
       }
       
