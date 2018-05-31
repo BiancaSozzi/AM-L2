@@ -159,16 +159,20 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
         }
         z.k[j] <- sigmoid(a.j[j])
       }
-      ########
-
-      # propagate the errors backward through the network
-      #######
+      
       for(k in 1:n.out){
         for(j in 1:n.hidden){
           a.k[k] <- a.k[k] + wkj[k,j] * z[j] 
         }
         z.k[k] <- softmax(a.k,a.k[k])
       }
+      ########
+
+      # propagate the errors backward through the network
+      #######
+      #PAG 14 APUNTE 
+      fi.j <- t(as.matrix(z.j))
+      dx.wkj <- as.matrix(z.k - t) %*% fi.j
       ########
 
       # gradient descent
