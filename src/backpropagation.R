@@ -5,9 +5,9 @@ sigmoid <- function(x) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  
+  res <- 1 / (1 + exp(-x))
+  
   ########
 
   res
@@ -27,12 +27,13 @@ dx.sigmoid <- function(x) {
 }
 
 # Activation function for the output variables
-softmax <- function(x, xk) {
+softmax <- function(a.j, a.k) {
   res <- 0
+  
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  
+  res <- exp(a.k) / sum(exp(a.j))
+  
   ########
 
   res
@@ -121,6 +122,7 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
   wkj <- matrix(runif(n.hidden * n.out, -.05, .05), n.out, n.hidden)
 
   # matrices of derivates of error with respecto to weights
+  # i: entrada, j: intermedia, k: salida
   dx.wji <- matrix(0, n.hidden, n.in)
   dx.wkj <- matrix(0, n.out, n.hidden)
 
@@ -146,21 +148,33 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
 
     for (m in 1:nrow(train.set)) {
       # add bias
-      x <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0)
+      x.i <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0)
       t <- coding(train.set[m, as.character(formula[2])])
 
       # propagate the input forward through the network
       #######
-      #
-      # ADD YOUR CODE HERE
-      #
+      
+      for(j in 1:n.hidden) {
+        for(i in 1:length(x.i)) {
+          a.j[j] <- a.j[j] + wji[j,i]*x.i[i]
+        }
+        z.j[j] <- sigmoid(a.j[j])
+      }
+      for(k in 1:n.out) {
+        for(j in 1:n.hidden) {
+          a.k[k] <- a.k[k] + wkj[k,j]*z.j[j]
+        }
+        z.k[k] <- softmax(a.j, a.k[k])
+      }
+      
       ########
 
       # propagate the errors backward through the network
       #######
-      #
-      # ADD YOUR CODE HERE
-      #
+      
+      fi.j <- t(as.matrix(z.j))
+      dx.wkj <- as.matrix(z.k - t) %*% fi.j
+      
       ########
 
       # gradient descent
@@ -199,7 +213,7 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
 #
 run.backpropagation.experiment<- function()
 {
-  
+  set.seed(1)
   datap <- 10
   ## Read dataset  
   data <- read.dataset("../data/faces.csv")
@@ -213,7 +227,7 @@ run.backpropagation.experiment<- function()
   ## bp: modelo de red neuronal aprendido usando backpropagation
   ## La función puede demorarse al correr. Para depurar los errores de programación,
   ## ejecute backprop con un conjunto chico de train.set y max.iter < 20.
-  bp <- backprop(train.set[],formula = class ~ .,eta=0.05, n.out = 4, n.hidden = 3, eps=1e-3, max.iter=10)
+  bp <- backprop(train.set[],formula = class~.,eta=0.05, n.out = 4, n.hidden = 3, eps=1e-3, max.iter=10)
   
   ## grafique los errores por cada iteración de backpropagation
   #######
