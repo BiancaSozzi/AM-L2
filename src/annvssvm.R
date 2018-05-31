@@ -5,7 +5,7 @@ deps <- c("utils.R")
 
 dependencies.loader(deps)
 
-# INSTALE LAS librerías nnet y e1071
+# INSTALE LAS librerÃ­as nnet y e1071
 
 library(nnet) # neural network library
 library(e1071) # svm library
@@ -119,17 +119,17 @@ f.measure <- function(true.pos, true.neg, false.pos, false.neg) {
 }
 
 results <- function(test.set, predicted.by){
-  #matriz de confusión para los resultados de ANN
+  #matriz de confusiÃ³n para los resultados de ANN
   mat <- confusion.matrix(test.set$class, predicted.by)
   
   print("Matriz de confusion")
   print(mat)
   
-  levs <- colnames(mat) #lista de labels/target o "niveles" de clasificación
+  levs <- colnames(mat) #lista de labels/target o "niveles" de clasificaciÃ³n
   # print("levs")
   # print(levs)
   #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
-  #de la clasificación en cada clase
+  #de la clasificaciÃ³n en cada clase
   #imprimimos al final los resultados
   for (k in 1:length(levs)){
     
@@ -149,6 +149,7 @@ results <- function(test.set, predicted.by){
         "\nRecall    ", rec,
         "\nF-measure:", f)
   }
+  return(acc)
   
 }
 
@@ -163,11 +164,11 @@ run.annvssvm <- function()
   test.set <- splits$test
   # print(test.set)
   
-  ann <- NULL # clasificador aprendido por la red neuronal usando la función nnet
-  svm <- NULL # clasificado aprendido por SVM usando la función svm
+  ann <- NULL # clasificador aprendido por la red neuronal usando la funciÃ³n nnet
+  svm <- NULL # clasificado aprendido por SVM usando la funciÃ³n svm
   
-  predicted.by.ann <- c() #resultados de la predicción usando el modelo ANN (método predict)
-  predicted.by.svm <- c() #resultados de la predicción usando el modelo SVM (método predict)
+  predicted.by.ann <- c() #resultados de la predicciÃ³n usando el modelo ANN (mÃ©todo predict)
+  predicted.by.svm <- c() #resultados de la predicciÃ³n usando el modelo SVM (mÃ©todo predict)
   
   #######
   
@@ -211,9 +212,7 @@ run.annvssvm <- function()
         "\nF-measure:", f_ann)
   }
   
-  # CREE LA MATRIZ DE CONFUSIÓN PARA LOS RESULTADOS CON SVM
-  # PROCEDA A MOSTRAR LAS MÉTRICAS
-  # PUEDE BASARSE EN EL CÓDIGO ANTERIOR PARA ANN
+  
   #######
   
   #matriz de confusión para los resultados de svm
