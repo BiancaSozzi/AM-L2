@@ -5,9 +5,7 @@ sigmoid <- function(x) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- 1 / (1 + exp(-x))
   ########
 
   res
@@ -82,9 +80,12 @@ has.satisfied.condition <- function(errors, eps, max.iter) {
 # The sum-of-squares error function. 
 # The backpropagation algorithm tries to minimize it
 
-error.function <- function(y, t) { sum((y - t)^2) / 2 }
+# The backpropagation algorithm tries to minimize it
+error.function <- function(y, t) {
+  # sum((y - t)^2) / 2 # <- regression error
+  -sum(log(y)*t) # <- cross-entropy for multiclass
 
-
+}
 # Backpropagation algorithm
 #
 #
@@ -113,6 +114,7 @@ error.function <- function(y, t) { sum((y - t)^2) / 2 }
 #  during a iteraton of algorithm
 #
 backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, max.iter=10000) {
+  set.seed(1)
   # plus one to add the bias parameter
   n.in <- ncol(train.set)
 
@@ -146,14 +148,17 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
 
     for (m in 1:nrow(train.set)) {
       # add bias
-      x <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0)
-      t <- coding(train.set[m, as.character(formula[2])])
+      x <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0) #agrega un 1 al principio
+      t <- coding(train.set[m, as.character(formula[2])]) ## devuelve el valor binario de la clase de la fila
 
       # propagate the input forward through the network
       #######
-      #
-      # ADD YOUR CODE HERE
-      #
+      for(j in 1:n.hidden){
+        for(i in 1:length(x)){
+          a.j[j] <- a.j[j] + wji[j,i] * x[i] 
+        }
+        z.j[j] <- sigmoid(a.j[j])
+      }
       ########
 
       # propagate the errors backward through the network
