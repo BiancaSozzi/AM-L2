@@ -80,8 +80,8 @@ has.satisfied.condition <- function(errors, eps, max.iter) {
 
 # The backpropagation algorithm tries to minimize it
 error.function <- function(y, t) {
-  # sum((y - t)^2) / 2 # <- regression error
-  -sum(log(y)*t) # <- cross-entropy for multiclass
+  sum((y - t)^2) / 2 # <- regression error
+  # -sum(log(y)*t) # <- cross-entropy for multiclass
 
 }
 # Backpropagation algorithm
@@ -153,7 +153,7 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
       #######
       for(j in 1:n.hidden){
         for(i in 1:length(x.i)){
-          a.j[j] <- a.j[j] + wji[j,i] * x[i] 
+          a.j[j] <- a.j[j] + wji[j,i] * x.i[i] 
         }
         z.j[j] <- sigmoid(a.j[j])
       }
@@ -178,8 +178,6 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
       sum.wkj_dk <- fi.k %*% dk
       dj <- dh * sum.wkj_dk
       dx.wij <- dj %*% x.i 
-      
-      # fi.i <- t(as.matrix)
       ########
 
       # gradient descent
@@ -189,9 +187,8 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
       wkj.old <- wkj
 
       #######
-      #
-      # ADD YOUR CODE HERE
-      #
+      wji <- wji.old - eta * dx.wij
+      wkj <- wkj.old - eta * dx.wkj
       ########
 
       # compute the error of this iteration
@@ -236,9 +233,7 @@ run.backpropagation.experiment<- function()
   
   ## grafique los errores por cada iteración de backpropagation
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  plot(1:bp$iters, bp$errors[-1], "l")
   ########
   
   ## utilizamos el conjunto de testeo para clasificar
