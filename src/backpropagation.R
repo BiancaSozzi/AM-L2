@@ -38,9 +38,7 @@ softmax <- function(x, xk) {
 dx.softmax <- function(x, xk) {
   res <- 0
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- (((exp(xk)*sum(exp(x))))*(exp(xk)*sum(exp(x))))/((exp(x)^2))
   ########
 
   res
