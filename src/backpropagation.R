@@ -233,7 +233,7 @@ run.backpropagation.experiment<- function()
   
   ## grafique los errores por cada iteración de backpropagation
   #######
-  plot(1:bp$iters, bp$errors[-1], "l")
+  plot(1:bp$iters, bp$errors[-1],xlab="iteracion",ylab="error", "l")
   ########
   
   ## utilizamos el conjunto de testeo para clasificar
