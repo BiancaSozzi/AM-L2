@@ -16,9 +16,7 @@ dx.sigmoid <- function(x) {
   res <- 0
 
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- exp(-x) / ((1 + exp(-x)) ^ 2)
   ########
 
   res
@@ -114,7 +112,7 @@ error.function <- function(y, t) {
 #  during a iteraton of algorithm
 #
 backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, max.iter=10000) {
-  set.seed(1)
+  
   # plus one to add the bias parameter
   n.in <- ncol(train.set)
 
@@ -148,21 +146,21 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
 
     for (m in 1:nrow(train.set)) {
       # add bias
-      x <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0) #agrega un 1 al principio
+      x.i <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0) #agrega un 1 al principio
       t <- coding(train.set[m, as.character(formula[2])]) ## devuelve el valor binario de la clase de la fila
 
       # propagate the input forward through the network
       #######
       for(j in 1:n.hidden){
-        for(i in 1:length(x)){
+        for(i in 1:length(x.i)){
           a.j[j] <- a.j[j] + wji[j,i] * x[i] 
         }
-        z.k[j] <- sigmoid(a.j[j])
+        z.j[j] <- sigmoid(a.j[j])
       }
       
       for(k in 1:n.out){
         for(j in 1:n.hidden){
-          a.k[k] <- a.k[k] + wkj[k,j] * z[j] 
+          a.k[k] <- a.k[k] + wkj[k,j] * z.j[j] 
         }
         z.k[k] <- softmax(a.k,a.k[k])
       }
@@ -172,7 +170,16 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
       #######
       #PAG 14 APUNTE 
       fi.j <- t(as.matrix(z.j))
-      dx.wkj <- as.matrix(z.k - t) %*% fi.j
+      dk <- as.matrix(z.k - t)
+      dx.wkj <- dk %*% fi.j # derivada de E respecto de wkj
+      
+      dh <- dx.sigmoid(a.j)
+      fi.k <- t(as.matrix(wkj))
+      sum.wkj_dk <- fi.k %*% dk
+      dj <- dh * sum.wkj_dk
+      dx.wij <- dj %*% x.i 
+      
+      # fi.i <- t(as.matrix)
       ########
 
       # gradient descent
@@ -211,7 +218,7 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
 #
 run.backpropagation.experiment<- function()
 {
-  
+  set.seed(1)
   datap <- 10
   ## Read dataset  
   data <- read.dataset("../data/faces.csv")
