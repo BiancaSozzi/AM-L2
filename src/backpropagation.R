@@ -38,9 +38,7 @@ softmax <- function(x, xk) {
 dx.softmax <- function(x, xk) {
   res <- 0
   #######
-  #
-  # ADD YOUR CODE HERE
-  #
+  res <- (((exp(xk)*sum(exp(x))))*(exp(xk)*sum(exp(x))))/((exp(x)^2))
   ########
   
   res
@@ -113,115 +111,88 @@ error.function <- function(y, t) {
 #  errors: vector of errors, each elements is the valur of error.function
 #  during a iteraton of algorithm
 #
-backprop <-
-  function(train.set,
-           formula,
-           eta = 0.05,
-           n.out,
-           n.hidden,
-           eps = 1e-3,
-           max.iter = 10000) {
-    # plus one to add the bias parameter
-    n.in <- ncol(train.set)
-    
-    # matrices of weights of the neuronal network
-    wji <- matrix(runif(n.in * n.hidden,-.05, .05), n.hidden, n.in)
-    wkj <- matrix(runif(n.hidden * n.out,-.05, .05), n.out, n.hidden)
-    
-    # matrices of derivates of error with respecto to weights
-    dx.wji <- matrix(0, n.hidden, n.in)
-    dx.wkj <- matrix(0, n.out, n.hidden)
-    
-    # activations for the hidden layer
-    a.j <- rep(0, nrow(wji))
-    # values of function of activation for the hidden layer
-    z.j <- rep(0, nrow(wji))
-    
-    # activations for the output layer
-    a.k <- rep(0, nrow(wkj))
-    # values of function of activation for the output layer, that represents the
-    # output of the neuronal network: y_k(x,w) = z.k
-    z.k <- rep(0, nrow(wkj))
-    
-    # counter for number of iteration
-    n.iter <- 0
-    
-    # each element this vector is error of a iteration of backpropagation
-    errors <- c(.Machine$double.xmax)
-    
-    repeat {
-      error <- 0
-      
-      for (m in 1:nrow(train.set)) {
-        # add bias
-        x.i <-
-          append(as.matrix(model.frame(formula, train.set[m, ])[-1]), 1, 0) #agrega un 1 al principio
-        t <-
-          coding(train.set[m, as.character(formula[2])]) ## devuelve el valor binario de la clase de la fila
-        
-        # propagate the input forward through the network
-        #######
-        for (j in 1:n.hidden) {
-          for (i in 1:length(x.i)) {
-            a.j[j] <- a.j[j] + wji[j, i] * x.i[i]
-          }
-          z.j[j] <- sigmoid(a.j[j])
+backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, max.iter=10000) {
+  
+  # plus one to add the bias parameter
+  n.in <- ncol(train.set)
+
+  # matrices of weights of the neuronal network
+  wji <- matrix(runif(n.in * n.hidden, -.05, .05), n.hidden, n.in)
+  wkj <- matrix(runif(n.hidden * n.out, -.05, .05), n.out, n.hidden)
+
+  # matrices of derivates of error with respecto to weights
+  dx.wji <- matrix(0, n.hidden, n.in)
+  dx.wkj <- matrix(0, n.out, n.hidden)
+
+  # activations for the hidden layer
+  a.j <- rep(0, nrow(wji))
+  # values of function of activation for the hidden layer
+  z.j <- rep(0, nrow(wji))
+
+  # activations for the output layer
+  a.k <- rep(0, nrow(wkj))
+  # values of function of activation for the output layer, that represents the
+  # output of the neuronal network: y_k(x,w) = z.k
+  z.k <- rep(0, nrow(wkj))
+
+  # counter for number of iteration
+  n.iter <- 0
+
+  # each element this vector is error of a iteration of backpropagation
+  errors <- c(.Machine$double.xmax)
+
+  repeat  {
+    error <- 0
+
+    for (m in 1:nrow(train.set)) {
+      # add bias
+      x.i <- append(as.matrix(model.frame(formula, train.set[m,])[-1]), 1, 0) #agrega un 1 al principio
+      t <- coding(train.set[m, as.character(formula[2])]) ## devuelve el valor binario de la clase de la fila
+
+      # propagate the input forward through the network
+      #######
+      for(j in 1:n.hidden){
+        for(i in 1:length(x.i)){
+          a.j[j] <- a.j[j] + wji[j,i] * x.i[i] 
         }
-        
-        for (k in 1:n.out) {
-          for (j in 1:n.hidden) {
-            a.k[k] <- a.k[k] + wkj[k, j] * z.j[j]
-          }
-          z.k[k] <- softmax(a.k, a.k[k])
-        }
-        ########
-        
-        # propagate the errors backward through the network
-        #######
-        #PAG 14 APUNTE
-        fi.j <- t(as.matrix(z.j))
-        dk <- as.matrix(z.k - t)
-        dx.wkj <- dk %*% fi.j # derivada de E respecto de wkj
-        
-        dh <- dx.sigmoid(a.j)
-        fi.k <- t(as.matrix(wkj))
-        sum.wkj_dk <- fi.k %*% dk
-        dj <- dh * sum.wkj_dk
-        dx.wij <- dj %*% x.i
-        ########
-        
-        # gradient descent
-        #
-        # save current weights
-        wji.old <- wji
-        wkj.old <- wkj
-        
-        #######
-        wji <- wji.old - eta * dx.wij
-        wkj <- wkj.old - eta * dx.wkj
-        ########
-        
-        # compute the error of this iteration
-        error <- error + error.function(z.k, t)
+        z.j[j] <- sigmoid(a.j[j])
       }
       
-      errors <- append(errors, error)
-      n.iter <- n.iter + 1
+      for(k in 1:n.out){
+        for(j in 1:n.hidden){
+          a.k[k] <- a.k[k] + wkj[k,j] * z.j[j] 
+        }
+        z.k[k] <- softmax(a.k,a.k[k])
+      }
+      ########
+
+      # propagate the errors backward through the network
+      #######
+      #PAG 14 APUNTE 
+      fi.j <- t(as.matrix(z.j))
+      dk <- as.matrix(z.k - t)
+      dx.wkj <- dk %*% fi.j # derivada de E respecto de wkj
       
-      cat(n.iter, ". ERROR:", error, "\n")
-      
-      if (has.satisfied.condition(errors, eps, max.iter))
-        return(list(
-          wkj = wkj.old,
-          # weights kj of previous iteration
-          wji = wji.old,
-          # weights ji of previous iteration
-          errors = errors,
-          iters = n.iter
-        ))  # return learned weights
-      
-      wji <- wji.old
-      wkj <- wkj.old
+      dh <- dx.sigmoid(a.j)
+      fi.k <- t(as.matrix(wkj))
+      sum.wkj_dk <- fi.k %*% dk
+      dj <- dh * sum.wkj_dk
+      dx.wij <- dj %*% x.i 
+      ########
+
+      # gradient descent
+      #
+      # save current weights
+      wji.old <- wji
+      wkj.old <- wkj
+
+      #######
+      wji <- wji.old - eta * dx.wij
+      wkj <- wkj.old - eta * dx.wkj
+      ########
+
+      # compute the error of this iteration
+      error <- error + error.function(z.k, t)
     }
   }
 #
@@ -261,9 +232,9 @@ run.backpropagation.experiment <- function()
     1:bp$iters,
     bp$errors[-1],
     type = "l",
-    xlab = "Iteración",
+    xlab = "Iteraciï¿½n",
     ylab = "Error",
-    main = "Errores por Iteración",
+    main = "Errores por Iteraciï¿½n",
     sub = "Backpropagation"
   )
   
