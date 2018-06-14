@@ -151,14 +151,14 @@ backprop <- function(train.set, formula, eta=0.05, n.out, n.hidden, eps=1e-3, ma
       #######
       for(j in 1:n.hidden){
         for(i in 1:length(x.i)){
-          a.j[j] <- a.j[j] + wji[j,i] * x.i[i] 
+          a.j[j] <- wji[j,i] * x.i[i] #a.j[j]
         }
         z.j[j] <- sigmoid(a.j[j])
       }
       
       for(k in 1:n.out){
         for(j in 1:n.hidden){
-          a.k[k] <- a.k[k] + wkj[k,j] * z.j[j] 
+          a.k[k] <- wkj[k,j] * z.j[j]  #a.k[k]
         }
         z.k[k] <- softmax(a.k,a.k[k])
       }
@@ -227,7 +227,7 @@ run.backpropagation.experiment<- function()
   ## bp: modelo de red neuronal aprendido usando backpropagation
   ## La función puede demorarse al correr. Para depurar los errores de programación,
   ## ejecute backprop con un conjunto chico de train.set y max.iter < 20.
-  bp <- backprop(train.set[],formula = class ~ .,eta=0.05, n.out = 4, n.hidden = 3, eps=1e-3, max.iter=10)
+  bp <- backprop(train.set[],formula = class ~ .,eta=0.05, n.out = 4, n.hidden = 3, eps=1e-3, max.iter=50)
   
   ## grafique los errores por cada iteración de backpropagation
   #######
