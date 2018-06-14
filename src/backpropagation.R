@@ -314,5 +314,5 @@ clasificar <- function(train.set, formula, bp) {
     aciertos = acertado,
     errados = fallido
   ))
-  
+}
 }
