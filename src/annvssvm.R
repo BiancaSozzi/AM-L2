@@ -17,9 +17,8 @@ true.positives <- function(cm, k) {
   res <- 0
 
   #######
-  
   res <- cm[k,k]
-  
+  print(res)
   ########
 
   res
@@ -31,9 +30,8 @@ true.negatives <- function(cm, k) {
   res <- 0
 
   #######
-
-  res <- sum(cm[-k,-k])
-  
+  cm <- cm[-k,-k]
+  res <- sum(cm)
   ########
 
   res
@@ -45,9 +43,7 @@ false.positives <- function(cm, k) {
   res <- 0
 
   #######
-  
   res <- sum(cm[-k,k])
-  
   ########
 
   res
@@ -59,9 +55,7 @@ false.negatives <- function(cm, k) {
   res <- 0
 
   #######
-  
   res <- sum(cm[k,-k])
-  
   ########
 
   res
@@ -72,9 +66,7 @@ accuracy <- function(true.pos, true.neg, false.pos, false.neg) {
   res <- 0
 
   #######
-  
   res <- (true.pos+true.neg)/(true.pos+true.neg+false.pos+false.neg)
-  
   ########
 
   return(res)
@@ -84,9 +76,7 @@ precision <- function(true.pos, false.pos) {
   res <- 0
 
   #######
-  
-  res <- (true.pos)/(true.pos+false.pos)
-  
+  res <- true.pos / (true.pos+false.pos)
   ########
 
   return(res)
@@ -96,9 +86,7 @@ recall <- function(true.pos, false.neg) {
   res <- 0
 
   #######
-  
-  res <- (true.pos)/(true.pos+false.neg)
-  
+  res <- true.pos / (true.pos+false.neg)
   ########
 
   return(res)
@@ -108,11 +96,10 @@ f.measure <- function(true.pos, true.neg, false.pos, false.neg) {
   res <- 0
 
   #######
+  prec <- precision(true.pos,false.pos)
+  rec <- recall(true.pos, false.neg)
   
-  pre <- precision(true.pos, false.pos)
-  re <- recall(true.pos, false.neg)
-  res <- 2*((pre*re)/(pre+re))
-  
+  res <- 2*(prec*rec)/(prec+rec)
   ########
 
   return(res)
@@ -171,82 +158,25 @@ run.annvssvm <- function()
   predicted.by.svm <- c() #resultados de la predicciÃ³n usando el modelo SVM (mÃ©todo predict)
   
   #######
-  
-  ann <- nnet(formula=class~., data=train.set, size=3, MaxNWts=3000)
-  svm <- svm(formula=class~., data=train.set)
-  
-  predicted.by.ann <- predict(ann, test.set, 'class')
+  # print(dim(train.set))
+  ann <- nnet(formula=class~., data=train.set, size=3, MaxNWts= 3000)
+  svm <- svm(formula=class~., data= train.set)
+  # print(svm)
+  predicted.by.ann <- predict(ann, test.set, "class")
   predicted.by.svm <- predict(svm, test.set)
-  
   ########
-  
-  #matriz de confusión para los resultados de ANN
-  mat_ann <- confusion.matrix(test.set$class, predicted.by.ann)
-  
-  print('')
-  print('--------------------------------------------')
-  print('ANN')
-  print(mat_ann)
-  
-  levs <- colnames(mat_ann) #lista de labels/target o "niveles" de clasificación
-  
-  #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
-  #de la clasificación en cada clase
-  #imprimimos al final los resultados
-  for (k in 1:length(levs)){
-    
-    tp_ann <- true.positives(mat_ann, k) # bien
-    tn_ann <- true.negatives(mat_ann, k) # bien
-    fp_ann <- false.positives(mat_ann, k) # mal
-    fn_ann <- false.negatives(mat_ann, k) # mal
-    
-    acc_ann <- accuracy(tp_ann, tn_ann, fp_ann, fn_ann)
-    prec_ann <- precision(tp_ann,fp_ann)
-    rec_ann <- recall(tp_ann, fn_ann)
-    f_ann <- f.measure(tp_ann, tn_ann, fp_ann, fn_ann)
-    
-    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_ann," tn:",tn_ann," fp:",fp_ann,"  fn:", fn_ann,
-        "\nAccuracy: ", acc_ann,
-        "\nPrecision:", prec_ann,
-        "\nRecall    ", rec_ann,
-        "\nF-measure:", f_ann)
-  }
+  print("Calculo para ANN")
+  results(test.set,predicted.by.ann)
+  print("Calculo para SVM")
+  results(test.set,predicted.by.svm)
   
   
   #######
-  
-  #matriz de confusión para los resultados de svm
-  mat_svm <- confusion.matrix(test.set$class, predicted.by.svm)
-  
-  print('')
-  print('--------------------------------------------')
-  print('SVM')
-  print(mat_svm)
-  
-  levs <- colnames(mat_svm) #lista de labels/target o "niveles" de clasificación
-  
-  #iteramos para mostrar los resultados (accuracy,recall,precision,fmeasure,etc)
-  #de la clasificación en cada clase
-  #imprimimos al final los resultados
-  for (k in 1:length(levs)){
-    
-    tp_svm <- true.positives(mat_svm, k) # bien
-    tn_svm <- true.negatives(mat_svm, k) # bien
-    fp_svm <- false.positives(mat_svm, k) # mal
-    fn_svm <- false.negatives(mat_svm, k) # mal
-    
-    acc_svm <- accuracy(tp_svm, tn_svm, fp_svm, fn_svm)
-    prec_svm <- precision(tp_svm,fp_svm)
-    rec_svm <- recall(tp_svm, fn_svm)
-    f_svm <- f.measure(tp_svm, tn_svm, fp_svm, fn_svm)
-    
-    cat("\nk = ",k, ", Class:", levs[k], " tp:",tp_svm," tn:",tn_svm," fp:",fp_svm,"  fn:", fn_svm,
-        "\nAccuracy: ", acc_svm,
-        "\nPrecision:", prec_svm,
-        "\nRecall    ", rec_svm,
-        "\nF-measure:", f_svm)
-  }   
-  
+  #
+  # ADD YOUR CODE HERE
+  #
   ########
+  
+  # mat_ann
 }
 
